@@ -1,0 +1,46 @@
+{
+  "name": "shiftify",
+  "version": "0.1.0",
+  "description": "A flexible schema-based object transformer for JavaScript/TypeScript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "schema",
+    "serialization",
+    "transform",
+    "typescript"
+  ],
+  "author": "Lindomar Oliveira <lindomar.souza1999@gmail.com> (https://github.com/lindomar-oliveira)",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint src/ --ext .ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prebuild": "npm run lint",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/jest": "^30.0.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "jest": "^30.0.5",
+    "prettier": "3.6.2",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.39.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lindomar-oliveira/shiftify.git"
+  },
+  "homepage": "https://github.com/lindomar-oliveira/shiftify#readme",
+  "bugs": {
+    "url": "https://github.com/lindomar-oliveira/shiftify/issues"
+  }
+}
