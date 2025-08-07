@@ -23,7 +23,7 @@ export function defineSchema(
       } else if (typeof descriptor === 'string') {
         path = descriptor;
       } else {
-        path = descriptor.from;
+        path = descriptor.from ?? key;
         transformFn = descriptor.transform;
         defaultValue = descriptor.default;
       }

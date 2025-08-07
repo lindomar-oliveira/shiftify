@@ -17,11 +17,12 @@ describe('shiftify', () => {
 
   it('should apply transform function', () => {
     const schema = defineSchema({
-      upper: { from: 'text', transform: (v: string) => v.toUpperCase() }
+      upper: { from: 'text', transform: (v: string) => v.toUpperCase() },
+      lower: { transform: (v: string) => v.toLowerCase() }
     });
-    const input = { text: 'hello' };
+    const input = { text: 'hello', lower: 'WORLD' };
 
-    expect(schema.shift(input)).toEqual({ upper: 'HELLO' });
+    expect(schema.shift(input)).toEqual({ upper: 'HELLO', lower: 'world' });
   });
 
   it('should use default value if missing', () => {
@@ -39,6 +40,19 @@ describe('shiftify', () => {
     });
     expect(schema.shift({ value: null })).toEqual({ field: null });
     expect(schema.shift({})).toEqual({ field: 'default' });
+  });
+
+  it('should handle nested transform and default', () => {
+    const schema = defineSchema({
+      score: {
+        from: 'stats.points',
+        transform: (v: number) => v * 2,
+        default: 10
+      }
+    });
+
+    expect(schema.shift({ stats: { points: 5 } })).toEqual({ score: 10 });
+    expect(schema.shift({ stats: {} })).toEqual({ score: 20 });
   });
 
   it('should pass through extra fields in passthrough mode', () => {
@@ -60,18 +74,5 @@ describe('shiftify', () => {
     const extended = base.extend({ b: true });
 
     expect(extended.shift({ a: 1, b: 2 })).toEqual({ a: 1, b: 2 });
-  });
-
-  it('should handle nested transform and default', () => {
-    const schema = defineSchema({
-      score: {
-        from: 'stats.points',
-        transform: (v: number) => v * 2,
-        default: 10
-      }
-    });
-
-    expect(schema.shift({ stats: { points: 5 } })).toEqual({ score: 10 });
-    expect(schema.shift({ stats: {} })).toEqual({ score: 20 });
   });
 });
