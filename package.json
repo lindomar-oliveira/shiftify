@@ -1,6 +1,6 @@
 {
   "name": "shiftify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A flexible schema-based object transformer for JavaScript/TypeScript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
