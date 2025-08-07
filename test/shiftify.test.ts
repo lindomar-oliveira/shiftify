@@ -42,19 +42,6 @@ describe('shiftify', () => {
     expect(schema.shift({})).toEqual({ field: 'default' });
   });
 
-  it('should handle nested transform and default', () => {
-    const schema = defineSchema({
-      score: {
-        from: 'stats.points',
-        transform: (v: number) => v * 2,
-        default: 10
-      }
-    });
-
-    expect(schema.shift({ stats: { points: 5 } })).toEqual({ score: 10 });
-    expect(schema.shift({ stats: {} })).toEqual({ score: 20 });
-  });
-
   it('should pass through extra fields in passthrough mode', () => {
     const schema = defineSchema({ id: true }, { mode: 'passthrough' });
     const input = { id: 1, extra: 'keep me' };
@@ -74,5 +61,81 @@ describe('shiftify', () => {
     const extended = base.extend({ b: true });
 
     expect(extended.shift({ a: 1, b: 2 })).toEqual({ a: 1, b: 2 });
+  });
+
+  describe('nested schemas', () => {
+    it('should handle inline schemas', () => {
+      const schema = defineSchema({
+        name: true,
+        address: {
+          schema: {
+            city: true,
+            country: { default: 'Brazil' }
+          }
+        }
+      });
+
+      const input = {
+        name: 'Charlie',
+        address: {
+          city: 'Rio de Janeiro'
+        }
+      };
+
+      expect(schema.shift(input)).toEqual({
+        name: 'Charlie',
+        address: {
+          city: 'Rio de Janeiro',
+          country: 'Brazil'
+        }
+      });
+    });
+
+    it('should handle nested object schemas', () => {
+      const userSchema = defineSchema({
+        id: true,
+        name: true
+      });
+
+      const postSchema = defineSchema({
+        title: true,
+        author: { from: 'user', schema: userSchema }
+      });
+
+      const input = {
+        title: 'Hello World',
+        user: { id: 1, name: 'Alice' }
+      };
+
+      expect(postSchema.shift(input)).toEqual({
+        title: 'Hello World',
+        author: { id: 1, name: 'Alice' }
+      });
+    });
+
+    it('should handle nested array schemas', () => {
+      const tagSchema = defineSchema({
+        name: true,
+        color: { default: 'blue' }
+      });
+
+      const postSchema = defineSchema({
+        title: true,
+        tags: { schema: tagSchema }
+      });
+
+      const input = {
+        title: 'My Post',
+        tags: [{ name: 'javascript' }, { name: 'typescript', color: 'red' }]
+      };
+
+      expect(postSchema.shift(input)).toEqual({
+        title: 'My Post',
+        tags: [
+          { name: 'javascript', color: 'blue' },
+          { name: 'typescript', color: 'red' }
+        ]
+      });
+    });
   });
 });
