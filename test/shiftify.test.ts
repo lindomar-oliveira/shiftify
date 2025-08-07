@@ -33,6 +33,14 @@ describe('shiftify', () => {
     expect(schema.shift(input)).toEqual({ city: 'Unknown' });
   });
 
+  it('should keep null as a valid value and only use default for undefined', () => {
+    const schema = defineSchema({
+      field: { from: 'value', default: 'default' }
+    });
+    expect(schema.shift({ value: null })).toEqual({ field: null });
+    expect(schema.shift({})).toEqual({ field: 'default' });
+  });
+
   it('should pass through extra fields in passthrough mode', () => {
     const schema = defineSchema({ id: true }, { mode: 'passthrough' });
     const input = { id: 1, extra: 'keep me' };

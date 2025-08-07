@@ -28,8 +28,11 @@ export function defineSchema(
         defaultValue = descriptor.default;
       }
 
-      const value = getValueByPath(input, path) ?? defaultValue;
-      const valueToUse = transformFn ? transformFn(value) : value;
+      const rawValue = getValueByPath(input, path);
+      const valueOrDefault = rawValue === undefined ? defaultValue : rawValue;
+      const valueToUse = transformFn
+        ? transformFn(valueOrDefault)
+        : valueOrDefault;
 
       if (options.strict && valueToUse === undefined) {
         console.warn(`[shiftify] Missing value for "${key}" (from "${path}")`);
