@@ -1,6 +1,10 @@
 import { Schema, SchemaOptions, Shiftify, TransformFunction } from '~/types';
 
 function getValueByPath(obj: Record<string, any>, path: string) {
+  if (path === '.') {
+    return obj;
+  }
+
   return path.split('.').reduce((current, key) => {
     return current && current[key] !== undefined ? current[key] : undefined;
   }, obj);
@@ -38,18 +42,24 @@ export function defineSchema(
 
       let valueToUse: any;
 
-      if (nestedSchema && valueOrDefault) {
-        const isShiftify =
-          typeof nestedSchema === 'object' && 'shift' in nestedSchema;
+      if (nestedSchema) {
+        const nestedInput = valueOrDefault;
 
-        const nested = isShiftify
-          ? (nestedSchema as Shiftify)
-          : defineSchema(nestedSchema as Schema, options);
+        if (nestedInput) {
+          const isShiftify =
+            typeof nestedSchema === 'object' && 'shift' in nestedSchema;
 
-        if (Array.isArray(valueOrDefault)) {
-          valueToUse = nested.shiftMany(valueOrDefault);
+          const nested = isShiftify
+            ? (nestedSchema as Shiftify)
+            : defineSchema(nestedSchema as Schema, options);
+
+          if (Array.isArray(valueOrDefault)) {
+            valueToUse = nested.shiftMany(valueOrDefault);
+          } else {
+            valueToUse = nested.shift(valueOrDefault);
+          }
         } else {
-          valueToUse = nested.shift(valueOrDefault);
+          valueToUse = undefined;
         }
       } else {
         valueToUse = transformFn
