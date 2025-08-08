@@ -52,7 +52,9 @@ export function defineSchema(
           valueToUse = nested.shift(valueOrDefault);
         }
       } else {
-        valueToUse = transformFn ? transformFn(valueOrDefault) : valueOrDefault;
+        valueToUse = transformFn
+          ? transformFn(valueOrDefault, input)
+          : valueOrDefault;
       }
 
       if (options.strict && valueToUse === undefined) {
